@@ -1,0 +1,13 @@
+[project]
+name = "2025-reddit-4chan-crawler"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "dotenv>=0.9.9",
+    "faktory>=1.0.0",
+    "psycopg2-binary>=2.9.11",
+    "pyfaktory>=0.2.10",
+    "requests>=2.32.5",
+]

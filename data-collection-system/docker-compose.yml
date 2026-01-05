@@ -1,0 +1,56 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb-ha:pg17
+    container_name: timescaledb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: timescaledb
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data
+
+  faktory:
+    image: contribsys/faktory:1.9.3
+    container_name: faktory
+    environment:
+      FAKTORY_PASSWORD: password
+    ports:
+      - "7419:7419"
+      - "7420:7420"
+    volumes:
+      - faktory-data:/var/lib/faktory/data
+
+  reddit-crawler:
+    image: python:3.10
+    container_name: reddit-crawler
+    volumes:
+      - .:/code
+    working_dir: /code
+    env_file:
+      - .env
+    command: bash -c "pip install -r requirements.txt && python3 reddit_crawler.py"
+    depends_on:
+      - timescaledb
+      - faktory
+
+  chan-crawler:
+    image: python:3.10
+    container_name: chan-crawler
+    volumes:
+      - .:/code
+    working_dir: /code
+    env_file:
+      - .env
+    command: bash -c "pip install -r requirements.txt && python3 chan_crawler.py"
+    depends_on:
+      - timescaledb
+      - faktory
+
+
+# done for persisitent data, so if we ever do docker compose down, we retain job queue and db
+# to remove persistent data, docker compose down -v
+volumes:
+  timescaledb-data:
+  faktory-data:
